@@ -259,37 +259,12 @@ resilience4j.circuitbreaker.instances.emailService.waitDurationInOpenState=10000
 shedlock.defaultLockAtMostFor=10m
 ```
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
 ### Development Guidelines
 
 - Follow the Google Java Style Guide
 - Write unit tests for all new features
 - Update documentation when changing functionality
 - Create issues for bugs and feature requests
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Kafka Connection Problems**
-    - Check if Kafka broker is running: `docker-compose ps kafka`
-    - Verify network connectivity: `nc -zv localhost 9092`
-
-2. **Database Connection Issues**
-    - Check PostgreSQL logs: `docker-compose logs postgres`
-    - Verify credentials in `.env` file
-
-3. **Notification Delivery Failures**
-    - Check provider-specific logs (Twilio, Firebase)
-    - Verify service account credentials
-    - Check rate limiting on external services
 
 ## License
 
