@@ -33,5 +33,7 @@ build/
 .vscode/
 .env
 # Add both of these
+notification-service/src/main/resources/firebase-service-account.json
 firebase-service-account.json
 **/firebase-service-account.json
+.DS_Store
