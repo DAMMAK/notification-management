@@ -19,7 +19,7 @@ public class NotificationService {
 
     private final EmailService emailService;
     private final SmsService smsService;
-    //    private final PushNotificationService pushNotificationService;
+        private final PushNotificationService pushNotificationService;
     private final NotificationHistoryService historyService;
     private final KafkaNotificationProducer kafkaNotificationProducer;
 
@@ -30,7 +30,7 @@ public class NotificationService {
         NotificationStatus status = switch (request.getType()) {
             case EMAIL -> emailService.sendEmail(request);
             case SMS -> smsService.sendSms(request);
-//            case PUSH -> pushNotificationService.sendPushNotification(request);
+            case PUSH -> pushNotificationService.sendPushNotification(request);
             default -> throw new IllegalArgumentException("Unsupported notification type: " + request.getType());
         };
 

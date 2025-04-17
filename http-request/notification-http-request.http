@@ -9,6 +9,24 @@ Content-Type: application/json
   "content": "Hello World testing my notification service"
 }
 
+### Send Notification via Email with template
+POST http://localhost:8081/api/notifications
+Content-Type: application/json
+
+{
+  "type": "EMAIL",
+  "recipient": "devdammak@gmail.com",
+  "subject": "Testing My Notification Service",
+  "templateName": "email-template.html",
+  "templateData": {
+    "subject": "Verify Your Email Address",
+    "name": "Damola",
+    "message": "Please click the button below to verify your email address.",
+    "actionText" : "Verify Email",
+    "actionUrl": "https://yourdomain.com/verify?token=abc123"
+  }
+}
+
 ### Send Notification via SMS
 POST http://localhost:8081/api/notifications
 Content-Type: application/json
