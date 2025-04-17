@@ -32,3 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 .env
+./notification-service/src/main/resources/firebase-service-account.json
