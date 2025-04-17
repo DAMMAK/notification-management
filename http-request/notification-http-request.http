@@ -1,0 +1,21 @@
+### Send Notification via Email
+POST http://localhost:8081/api/notifications
+Content-Type: application/json
+
+{
+  "type": "EMAIL",
+  "recipient": "devdammak@gmail.com",
+  "subject": "Testing My Notification Service",
+  "content": "Hello World testing my notification service"
+}
+
+### Send Notification via SMS
+POST http://localhost:8081/api/notifications
+Content-Type: application/json
+
+{
+  "type": "SMS",
+  "recipient": "+2348189420733",
+  "subject": "Testing My Notification Service",
+  "content": "Hello World testing my notification service"
+}
