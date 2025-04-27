@@ -6,12 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationStatus {
-    private String id;
+    private UUID id;
     private NotificationRequest.NotificationType type;
     private String recipient;
     private boolean success;
@@ -19,25 +20,25 @@ public class NotificationStatus {
     private LocalDateTime sentAt;
 
     // Success factory method
-    public static NotificationStatus getSuccess(NotificationRequest request) {
+    public static NotificationStatus getSuccess(NotificationRequest request, String message) {
         return new NotificationStatus(
-                request.getId().toString(),
+                request.getId(),
                 request.getType(),
                 request.getRecipient(),
                 true,
-                request.getType() + " sent successfully",
+                message == null ? request.getType() + " sent successfully" : message,
                 LocalDateTime.now()
         );
     }
 
     // Error factory method
-    public static NotificationStatus getError(NotificationRequest request) {
+    public static NotificationStatus getError(NotificationRequest request, String message) {
         return new NotificationStatus(
-                request.getId().toString(),
+                request.getId(),
                 request.getType(),
                 request.getRecipient(),
                 false,
-                request.getType() + " failed",
+                message == null ? request.getType() + " failed" : message,
                 LocalDateTime.now()
         );
     }

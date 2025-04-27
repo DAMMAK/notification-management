@@ -37,3 +37,15 @@ Content-Type: application/json
   "subject": "Testing My Notification Service",
   "content": "Hello World testing my notification service"
 }
+
+###
+GET http://localhost:8081/actuator/health
+
+
+###
+GET http://localhost:8081/actuator/metrics
+
+
+
+###
+GET http://localhost:8081/actuator/prometheu

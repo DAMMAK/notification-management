@@ -65,39 +65,19 @@ public class SmsService {
 
             smsSuccessCounter.increment();
             log.info("SMS sent successfully to {}, SID: {}", request.getRecipient(), message.getSid());
-            return new NotificationStatus(
-                    message.getSid(),
-                    NotificationRequest.NotificationType.SMS,
-                    request.getRecipient(),
-                    true,
-                    "SMS sent successfully",
-                    LocalDateTime.now()
-            );
+            return NotificationStatus.getSuccess(request,"SMS sent successfully");
+
         } catch (Exception e) {
             smsFailureCounter.increment();
             log.error("Failed to send SMS to {}: {}", request.getRecipient(), e.getMessage());
             failedNotificationService.saveFailedNotification(request, e.getMessage());
-            return new NotificationStatus(
-                    UUID.randomUUID().toString(),
-                    NotificationRequest.NotificationType.SMS,
-                    request.getRecipient(),
-                    false,
-                    "Failed to send SMS: " + e.getMessage(),
-                    LocalDateTime.now()
-            );
+            return NotificationStatus.getError(request, "Failed to send SMS: " + e.getMessage());
         }
     }
 
     public NotificationStatus fallbackSms(NotificationRequest request, Exception e) {
         log.error("Circuit breaker triggered for SMS to {}: {}", request.getRecipient(), e.getMessage());
         failedNotificationService.saveFailedNotification(request, "Circuit breaker triggered: " + e.getMessage());
-        return new NotificationStatus(
-                UUID.randomUUID().toString(),
-                NotificationRequest.NotificationType.SMS,
-                request.getRecipient(),
-                false,
-                "SMS service temporarily unavailable",
-                LocalDateTime.now()
-        );
+        return NotificationStatus.getError(request, "SMS service temporarily unavailable");
     }
 }

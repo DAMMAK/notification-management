@@ -18,7 +18,7 @@ public class NotificationHistoryService {
     public void saveNotificationHistory(NotificationStatus status) {
         try {
             NotificationHistory history = new NotificationHistory();
-            history.setId(status.getId());
+            history.setId(status.getId().toString());
             history.setType(status.getType());
             history.setRecipient(status.getRecipient());
             history.setSuccess(status.isSuccess());

@@ -50,10 +50,11 @@ public class NotificationService {
         };
         var data = response.thenApply(result -> {
             log.info("Notification sent successfully: {}", result);
-            return NotificationStatus.getSuccess(request);
+            return NotificationStatus.getSuccess(request, null);
         }).exceptionally(ex -> {
             log.error("Failed to send notification", ex);
-             return NotificationStatus.getError(request);
+             return NotificationStatus.getError(request, null
+             );
         });
         return data.get();
     }

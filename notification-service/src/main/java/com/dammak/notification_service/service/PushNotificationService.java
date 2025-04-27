@@ -40,24 +40,12 @@ public class PushNotificationService {
             String response = firebaseMessaging.send(message);
 
             log.info("Push notification sent successfully to {}, response: {}", request.getRecipient(), response);
-            return new NotificationStatus(
-                    response,
-                    NotificationRequest.NotificationType.PUSH,
-                    request.getRecipient(),
-                    true,
-                    "Push notification sent successfully",
-                    LocalDateTime.now()
-            );
+            return NotificationStatus.getSuccess(request, "Push notification sent successfully");
+
         } catch (FirebaseMessagingException e) {
             log.error("Failed to send push notification to {}: {}", request.getRecipient(), e.getMessage());
-            return new NotificationStatus(
-                    UUID.randomUUID().toString(),
-                    NotificationRequest.NotificationType.PUSH,
-                    request.getRecipient(),
-                    false,
-                    "Failed to send push notification: " + e.getMessage(),
-                    LocalDateTime.now()
-            );
+            return NotificationStatus.getError(request, "Failed to send push notification: " + e.getMessage());
+
         }
     }
 }

@@ -62,40 +62,21 @@ public class EmailService {
 
             emailSuccessCounter.increment();
             log.info("Email sent successfully to {}", request.getRecipient());
-            return new NotificationStatus(
-                    UUID.randomUUID().toString(),
-                    NotificationRequest.NotificationType.EMAIL,
-                    request.getRecipient(),
-                    true,
-                    "Email sent successfully",
-                    LocalDateTime.now()
-            );
+            return NotificationStatus.getSuccess(request, null);
         } catch (MessagingException e) {
             emailFailureCounter.increment();
             log.error("Failed to send email to {}: {}", request.getRecipient(), e.getMessage());
             failedNotificationService.saveFailedNotification(request, e.getMessage());
-            return new NotificationStatus(
-                    UUID.randomUUID().toString(),
-                    NotificationRequest.NotificationType.EMAIL,
-                    request.getRecipient(),
-                    false,
-                    "Failed to send email: " + e.getMessage(),
-                    LocalDateTime.now()
-            );
+            return NotificationStatus.getError(request, null);
+
         }
     }
 
     public NotificationStatus fallbackEmail(NotificationRequest request, Exception e) {
         log.error("Circuit breaker triggered for email to {}: {}", request.getRecipient(), e.getMessage());
         failedNotificationService.saveFailedNotification(request, "Circuit breaker triggered: " + e.getMessage());
-        return new NotificationStatus(
-                UUID.randomUUID().toString(),
-                NotificationRequest.NotificationType.EMAIL,
-                request.getRecipient(),
-                false,
-                "Email service temporarily unavailable",
-                LocalDateTime.now()
-        );
+        return NotificationStatus.getError(request, "Email service temporarily unavailable");
+
     }
 
 //    @Bean

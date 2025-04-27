@@ -73,7 +73,7 @@ public class NotificationServiceTest {
     void testProcessEmailNotification() {
         // Arrange
         NotificationStatus expectedStatus = new NotificationStatus(
-                UUID.randomUUID().toString(),
+                UUID.randomUUID(),
                 NotificationRequest.NotificationType.EMAIL,
                 emailRequest.getRecipient(),
                 true,
@@ -100,7 +100,7 @@ public class NotificationServiceTest {
     void testProcessSmsNotification() {
         // Arrange
         NotificationStatus expectedStatus = new NotificationStatus(
-                UUID.randomUUID().toString(),
+                UUID.randomUUID(),
                 NotificationRequest.NotificationType.SMS,
                 smsRequest.getRecipient(),
                 true,
@@ -127,7 +127,7 @@ public class NotificationServiceTest {
     void testProcessPushNotification() {
         // Arrange
         NotificationStatus expectedStatus = new NotificationStatus(
-                UUID.randomUUID().toString(),
+                UUID.randomUUID(),
                 NotificationRequest.NotificationType.PUSH,
                 pushRequest.getRecipient(),
                 true,
