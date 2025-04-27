@@ -1,11 +1,12 @@
 package com.dammak.notification_service.service;
 
-import com.dammak.notification_service.kafka.producer.KafkaNotificationProducer;
+import com.dammak.notification_service.kafka.producer.KafkaProducer;
 import com.dammak.notification_service.model.NotificationRequest;
 import com.dammak.notification_service.model.NotificationStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +20,23 @@ public class NotificationService {
 
     private final EmailService emailService;
     private final SmsService smsService;
-        private final PushNotificationService pushNotificationService;
+    private final PushNotificationService pushNotificationService;
     private final NotificationHistoryService historyService;
-    private final KafkaNotificationProducer kafkaNotificationProducer;
+    private final KafkaProducer<NotificationRequest> notificationRequestKafkaProducer;
+    private final KafkaProducer<NotificationStatus> notificationStatusKafkaProducer;
+    @Value("${spring.kafka.bootstrap-servers}")
+    private String bootstrapServers;
 
+    @Value("${notification.kafka.topic.normal}")
+    private String normalPriorityTopic;
+
+    @Value("${notification.kafka.topic.high}")
+    private String highPriorityTopic;
+
+    @Value("${notification.kafka.topic.critical}")
+    private String criticalPriorityTopic;
+    @Value("${notification.kafka.topic.status-events}")
+    private String responseTopic;
 
     public NotificationStatus processNotification(NotificationRequest request) {
         log.info("Processing notification request: {}", request);
@@ -37,25 +51,30 @@ public class NotificationService {
         // Save notification history
         historyService.saveNotificationHistory(status);
 
+        notificationStatusKafkaProducer.sendEvent(responseTopic, status.getId().toString(), status); // Send success to notification-status-event topic
+
         return status;
     }
 
-    public NotificationStatus sendNotification(NotificationRequest request) throws ExecutionException, InterruptedException {
+    public void sendNotification(NotificationRequest request) throws ExecutionException, InterruptedException {
         log.info("Sending notification request: {}", request);
         CompletableFuture<SendResult<String, NotificationRequest>> response = switch (request.getPriority()) {
-            case HIGH -> kafkaNotificationProducer.sendHighPriorityNotification(request);
-            case NORMAL -> kafkaNotificationProducer.sendNormalNotification(request);
-            case CRITICAL -> kafkaNotificationProducer.sendCriticalNotification(request);
+            case HIGH -> notificationRequestKafkaProducer.sendEvent(highPriorityTopic, request.getId().toString(), request);
+            case NORMAL -> notificationRequestKafkaProducer.sendEvent(normalPriorityTopic, request.getId().toString(), request);
+            case CRITICAL -> notificationRequestKafkaProducer.sendEvent(criticalPriorityTopic, request.getId().toString(), request);
             default -> throw new IllegalArgumentException("Unsupported priority: " + request.getPriority());
         };
-        var data = response.thenApply(result -> {
+       response.thenApply(result -> {
             log.info("Notification sent successfully: {}", result);
-            return NotificationStatus.getSuccess(request, null);
-        }).exceptionally(ex -> {
+           return null;
+       }).exceptionally(ex -> {
             log.error("Failed to send notification", ex);
-             return NotificationStatus.getError(request, null
-             );
+            NotificationStatus errorStatus = NotificationStatus.getError(request, ex.getMessage());
+            notificationStatusKafkaProducer.sendEvent(responseTopic, errorStatus.getId().toString(), errorStatus); // Send error to notification-status-event topic
+            return null;
         });
-        return data.get();
+
+
     }
+
 }

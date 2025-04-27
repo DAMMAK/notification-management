@@ -63,7 +63,7 @@ public class EmailService {
             emailSuccessCounter.increment();
             log.info("Email sent successfully to {}", request.getRecipient());
             return NotificationStatus.getSuccess(request, null);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             emailFailureCounter.increment();
             log.error("Failed to send email to {}: {}", request.getRecipient(), e.getMessage());
             failedNotificationService.saveFailedNotification(request, e.getMessage());

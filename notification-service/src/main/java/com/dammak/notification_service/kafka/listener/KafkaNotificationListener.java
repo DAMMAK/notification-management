@@ -21,23 +21,6 @@ public class KafkaNotificationListener {
     private final NotificationService notificationService;
     private final KafkaTemplate<String, NotificationStatus> kafkaTemplate;
 
-    @Value("${notification.kafka.topic.status-events}")
-    private String responseTopic;
-
-
-    private void sendResponse(NotificationRequest request, NotificationStatus status, Exception exception) {
-
-
-        kafkaTemplate.send(responseTopic, request.getId().toString(), status)
-                .whenComplete((record, ex) -> {
-                    if (ex == null) {
-                        log.info("Successfully sent response for notification {}", request.getId());
-                    }else{
-                        log.error("Failed to send response for notification {}", request.getId(), ex);
-                    }
-                });
-    }
-
 
     @KafkaListener(
             topics = "${notification.kafka.topic.normal}",
@@ -57,10 +40,8 @@ public class KafkaNotificationListener {
         try {
             NotificationStatus status = notificationService.processNotification(request);
             log.info("Notification processed: {}", status);
-            sendResponse(request, status, null);
         } catch (Exception e) {
             log.error("Error processing notification: {}", e.getMessage(), e);
-            sendResponse(request, NotificationStatus.getError(request,"Error processing notification"), e);
         }
     }
 

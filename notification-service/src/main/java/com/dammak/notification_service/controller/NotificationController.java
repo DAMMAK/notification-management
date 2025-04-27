@@ -48,18 +48,12 @@ public class NotificationController {
 
         try {
             // Wait for the response with timeout
-            NotificationStatus response = responseFuture.get(30, TimeUnit.SECONDS);
+            NotificationStatus response = responseFuture.get(180, TimeUnit.SECONDS);
             return ResponseEntity.ok(response);
-        } catch (TimeoutException e) {
+        } catch (Exception e) {
             pendingResponses.remove(request.getId());
             return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT)
                     .body("Notification processing timeout");
-        } catch (ExecutionException | InterruptedException e) {
-            pendingResponses.remove(request.getId());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error processing notification: " + e.getMessage());
-        } catch (java.util.concurrent.TimeoutException e) {
-            throw new RuntimeException(e);
         }
     }
     @GetMapping("/")
